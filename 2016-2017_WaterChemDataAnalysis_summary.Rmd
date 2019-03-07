@@ -1,0 +1,68 @@
+---
+title: "Megalopae2016_MOATS_chemistry_summary"
+author: "Shelly Trigg"
+date: "9/22/2018"
+output: pdf_document
+---
+# Summary of Megaolopae 2016 MOATS water chemistry
+
+## plot of pH over time for low pH (7.4) MOATS
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(exp_pH[which(exp_pH$Target_pH == 7.4),], aes(x= datetime, y= pH)) + geom_point(aes(colour = source)) + scale_x_datetime("datetime", date_breaks = "day", date_labels = "%b %d", expand = c(0,0), minor_breaks = NULL) + xlab("Date") + facet_wrap(~MOATS) + ggtitle(paste(data$Experiment[1],data$Start_Date[1],data$Start_Date[nrow(data)],"pH_7.4", sep = "_")) + theme(axis.text.x=element_text(angle = 90, hjust = 0))
+```
+
+## dotplots overlayed on violin plots of pH distribution for low pH (7.4) MOATS shown on the same y-axis; yellow dot = mean, yellow lines = standard deviation
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(exppH_short, aes(as.character(MOATS), pH)) + geom_violin(aes(fill= pH)) + 
+      geom_point(aes(as.character(MOATS), pH)) + 
+      stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+                   geom="pointrange", color="orange") + xlab("MOATS") + 
+      ggtitle(paste(treats[[3]]$Experiment[1],treats[[3]]$Start_Date[1],treats[[3]]$End_Date[1],"pH_7.4", sep = "_"))
+
+```
+## dotplots overlayed on violin plots of pH distribution for low pH (7.4) MOATS shown with individual y-axis; yellow dot = mean, yellow lines = standard deviation
+```{r, echo=FALSE}
+library(ggplot2)
+
+ ggplot(exppH_short, aes(as.character(MOATS), pH)) + geom_violin(aes(fill = pH)) + 
+     geom_point(aes(as.character(MOATS), pH)) + 
+     stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+                  geom="pointrange", color="orange") + 
+     facet_wrap(~MOATS, scale = "free") + xlab("MOATS") + 
+     ggtitle(paste(treats[[3]]$Experiment[1],treats[[3]]$Start_Date[1],treats[[3]]$End_Date[1],"pH_7.4", sep = "_"))
+
+```
+## plot of pH over time for low pH (7.8) MOATS
+```{r, echo=FALSE}
+ library(ggplot2)
+
+ggplot(exp_pH[which(exp_pH$Target_pH == 7.8),], aes(x= datetime, y= pH)) + geom_point(aes(colour = source)) + scale_x_datetime("datetime", date_breaks = "day", date_labels = "%b %d", expand = c(0,0), minor_breaks = NULL) + xlab("Date") + facet_wrap(~MOATS) + ggtitle(paste(data$Experiment[1],data$Start_Date[1],data$Start_Date[nrow(data)],"pH_7.8", sep = "_")) + theme(axis.text.x=element_text(angle = 90, hjust = 0))
+
+```
+
+## dotplots overlayed on violin plots of pH distribution for low pH (7.8) MOATS shown on the same y-axis; yellow dot = mean, yellow lines = standard deviation
+```{r, echo=FALSE}
+library(ggplot2)
+
+ggplot(exppH_short512, aes(as.character(MOATS), pH)) + geom_violin(aes(fill= pH)) + 
+     geom_point(aes(as.character(MOATS), pH)) + 
+     stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+                  geom="pointrange", color="orange") + xlab("MOATS") + 
+     ggtitle(paste(treats[[3]]$Experiment[1],treats[[3]]$Start_Date[1],treats[[3]]$End_Date[1],"pH_7.8", sep = "_"))
+
+```
+## dotplots overlayed on violin plots of pH distribution for low pH (7.8) MOATS shown with individual y-axis; yellow dot = mean, yellow lines = standard deviation
+```{r, echo=FALSE}
+library(ggplot2)
+
+ggplot(exppH_short512, aes(as.character(MOATS), pH)) + geom_violin(aes(fill = pH)) + 
+     geom_point(aes(as.character(MOATS), pH)) + 
+     stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+                  geom="pointrange", color="orange") + 
+     facet_wrap(~MOATS, scale = "free") + xlab("MOATS") + 
+     ggtitle(paste(treats[[3]]$Experiment[1],treats[[3]]$Start_Date[1],treats[[3]]$End_Date[1],"pH_7.8", sep = "_"))
+   
+```
+
