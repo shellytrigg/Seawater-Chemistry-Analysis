@@ -1,0 +1,285 @@
+---
+title: "2016 Pteropod Water Chem"
+author: "Shelly Trigg"
+date: "3/19/2019"
+output: rmarkdown::github_document
+---
+
+load libraries
+```{r, echo = FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readxl)
+library(seacarb)
+```
+
+read in and format spec data
+```{r}
+#define salinity data path
+spec_path <- "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/specs_w_correction/"
+#salinity is recorded as 29.62 for all dates
+#PMEL measured salinity 29.61, so I'll just go with the 29.62 (I don't think 0.01 is going to make a difference)
+
+#List all spec files in directory
+file.names <- dir(spec_path, pattern = ".csv", full.names = TRUE)
+
+#Create empty output file for new files to go into
+Spec_pH <- data.frame()
+
+#Create loop to go through all files and remove unnecessary columns
+for (i in 1:length(file.names)){
+  SpecTemp <- read.csv(file.names[i], stringsAsFactors = FALSE)
+  SpecTemp2 <- SpecTemp[-1,-c(1,4,6,8,10:30)]
+  
+  Spec_pH <- rbind(Spec_pH,SpecTemp2)
+}
+
+#Make a list of MOATS numbers in order
+moatsNames <- c(1,3,4,5,6,7,8,10,11,12,13)
+
+#Rename columns
+colnames(Spec_pH)[1:5]<-c("MOATS","Jar","Date","Salinity","pH")
+
+#Make MOATS a factor, and pH numeric
+Spec_pH$MOATS<-as.numeric(Spec_pH$MOATS, moatsNames)
+Spec_pH$Salinity<- as.numeric(Spec_pH$Salinity)
+Spec_pH$pH<-as.numeric(Spec_pH$pH)
+
+#remove empty rows
+Spec_pH <- subset(Spec_pH, !is.na(pH))
+
+#order rows by MOATS number 
+Spec_pH <- Spec_pH[order(Spec_pH$MOATS),]
+
+#Change DateTime format so R is happy
+str(Spec_pH)
+Spec_pH$Date <- as.POSIXct(strptime(Spec_pH$Date, "%e-%b-%y"))
+
+#Add treatment column
+lowMOATS <- c(1,4,5,8,10,11)
+Spec_pH$Treatment <- "High"
+Spec_pH$Treatment[Spec_pH$MOATS %in%lowMOATS] <- "Low"
+colnames(Spec_pH)[5] <- "pH_at_25C"
+Spec_pH$Data_Type <- "Spec"
+
+```
+
+read in and format MOATS data
+```{r}
+#define path to master MOATS data folder containing all individual MOATS folders (i.e. M1-M13) each with a set of .lvm files
+lvm_path <- "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data"
+#create empty dataframe
+d <- data.frame()
+#get the folder list from the wd
+folder.list <- dir(lvm_path, full.names = TRUE)
+#this sets the window length (number of samples to average for subsampled dataset)
+winLen <- 100
+
+#this will get the file names in each folder
+for(i in 1:length(folder.list)){
+  file.names <- dir(folder.list[i], pattern = ".lvm")
+  for(j in 1:length(file.names)){
+    print(paste(folder.list[i],file.names[j], sep = "/"))
+    #start pulling in the data.  
+    #First count the max number of columns in the file
+    ncols <- max(count.fields(paste(folder.list[i],file.names[j],sep="/"), sep = "\t"))
+    #Read in data to get date and time data were collected
+    dtemp <- read.table(paste(folder.list[i],file.names[j],sep="/"), sep="\t", skip = 9, nrows=2, header=FALSE, col.names = paste0("V", seq_len(ncols)), stringsAsFactors=FALSE, fill = TRUE)
+    #fill = TRUE adds NAs to empty fields,col.names = paste0("V", seq_len(ncols))  makes the function consider all columns for adding NAs to
+    
+    #pull the date and time from these cell
+    datetime = paste(dtemp[1,2],dtemp[2,2],sep = "_")
+    #convert to posix 
+    datetime <- as.POSIXct(strptime(datetime, "%Y/%m/%d_%H:%M:%S"), tz = "GMT")
+    #now read in the rest of the data
+    dtemp <- read.table(paste(folder.list[i],file.names[j],sep="/"), sep="\t", skip = 22, header=FALSE, col.names = paste0("V", seq_len(ncols)), stringsAsFactors=FALSE, fill = TRUE,skipNul = TRUE)
+    #only include data for seconds, pH, tempLowBox, tempHiBox, DO
+    dtemp <- dtemp[,c(1,2,5,8,11)]
+    #create MOATS column; extracts MOATS number from folder name (i.e. '1' gets extracted from M1 Data')
+    dtemp$moats <- substr(folder.list[i],nchar(folder.list[i])-1,nchar(folder.list[i]))
+    dtemp$moats <- gsub("m","",dtemp$moats)
+    dtemp$moats <- as.numeric(dtemp$moats)
+    #rename remaining columns
+    colnames(dtemp) <- c("Secs","pH", "OL", "O","DO","MOATS")
+    #create a column for date 
+    dtemp$datetime <- datetime + dtemp$Secs
+    #this next loop creates the short dataset, averaging over winlen number of records; take the total number of data rows, divide by winLen, and round to nearest integer.
+    sLen <- as.integer(nrow(dtemp)/winLen)
+    #create shortened data frame
+    dShort <-dtemp[1:sLen, ]
+    dStartIndex <- 1
+    dEndIndex <- winLen
+    for (l in 1:sLen){
+      dShort[l, ]<- dtemp[dStartIndex, ]
+      #for seconds column, print the range of seconds the average is taken over
+      #dShort[l,1]<- paste(as.integer(dtemp[dStartIndex,1]),as.integer(dtemp[dEndIndex,1]), sep = "-")
+      dShort[l,c(2:5)] <- apply(dtemp[dStartIndex:dEndIndex,c(2:5)],2,mean)
+      dStartIndex <- dStartIndex + winLen
+      dEndIndex <- dEndIndex + winLen
+    }
+    d <- rbind(d, dShort)
+  }
+}
+```
+
+restrict MOATS data to dates of the experiment
+```{r}
+start_date <- as.POSIXct("2016/11/21_17:00:00", "%Y/%m/%d_%H:%M:%S", tz = "GMT")
+end_date <- as.POSIXct("2016/11/30", "%Y/%m/%d", tz = "GMT")
+
+d <- d[which(d$datetime >= start_date & d$datetime <= end_date),]
+
+```
+
+plot MOATS pH data
+```{r MOATS pH data}
+#plot MOATS pH data 
+ggplot(d,aes(datetime, pH)) + geom_point() + facet_wrap(~MOATS)
+```
+blip on MOATS 1 between Nov 24-26; but could be real
+
+
+plot MOATS temperature data
+```{r MOATS temperature data}
+#plot temp data for all MOATS
+ggplot(d,aes(datetime, OL)) + geom_point() + facet_wrap(~MOATS)
+```
+MOATS 12 temp probe wonky, don't include that data
+
+
+plot MOATS temperature data without MOATS 12 which seemed to have a wonky probe
+```{r MOATS temperature data, no MOATS 12}
+#plot temp data without 12
+ggplot(d[which(d$MOATS != 12),],aes(datetime, OL)) + geom_point() + facet_wrap(~MOATS)
+```
+all MOATS are a little spikey, suggesting these spikes are real
+
+plot MOATS DO data
+```{r MOATS DO data}
+ggplot(d,aes(datetime, DO)) + geom_point() + facet_wrap(~MOATS)
+```
+MOATS 12 and MOATS 1 DO probes have weird blips between nov 24-26 and nov 25-27, respectively
+
+calculate mean temp
+```{r}
+mean(d[which(d$MOATS != 12),"OL"])
+#[1] 10.29312
+sd(d[which(d$MOATS != 12),"OL"])
+#[1] 0.165076
+meanT <- mean(d[which(d$MOATS != 12),"OL"])
+```
+
+Convert spec pH at 25C to pH at 12
+```{r}
+for (i in 1:nrow(Spec_pH)){
+  print(i)
+  Sal <- 29.62
+  #calculate TA ('alk') using the slope and intercept determined by 'Alkalinity v Salinity_KD_2018.R' script. This script compared Fassbender et al 2016 data to data from Muk (Chase's and our data from the past two years). This way, we were able to figure out what our offset is here at Muk.
+  TAcalc <- ((50.946 * Sal)+522.506)/1000000
+  pHspec <- Spec_pH$pH_at_25C[i]
+  Temp <- meanT
+  Spec_pH$carbSpecDIC[i] <- carb(flag = 8, pHspec, TAcalc, Sal,T=25)$DIC
+  Spec_pH$carbSpecpH[i] <- carb(flag = 15, TAcalc,as.numeric(Spec_pH$carbSpecDIC[i]), Sal,Temp)$pH
+}
+
+class(Spec_pH$carbSpecpH) <- "numeric"
+class(Spec_pH$carbSpecDIC) <- "numeric"
+Spec_pH$carbSpecDIC <- Spec_pH$carbSpecDIC *1000000
+```
+
+plot spec pH over time
+```{r spec pH over time}
+ggplot(Spec_pH, aes(Date,carbSpecpH)) + geom_point(aes(color = Treatment)) + facet_wrap(~MOATS)
+```
+the Nov 22 spec pH for MOATS 13 seems very off; probably can exclude that
+
+boxplots of spec pH facetted by treatment; exclude Nov 22 spec pH for MOATS 13
+```{r spec pH treatment boxplots }
+ggplot(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22")),]) + geom_boxplot(aes(Treatment,carbSpecpH, color = Treatment))
+```
+
+Calculate mean and sd for Spec pH
+```{r}
+mean(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "Low"),"carbSpecpH"])
+sd(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "Low"),"carbSpecpH"])
+
+
+mean(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "High"),"carbSpecpH"])
+sd(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "High"),"carbSpecpH"])
+```
+
+read in target treatment info and merge with MOATS data so data can be averaged by treatment
+```{r}
+treat <- read.csv("~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Treatments.csv", stringsAsFactors = FALSE)
+#merge treatment info with MOATS info
+dtreat <- merge(d, treat, by = "MOATS", all.x = TRUE)
+
+```
+
+Calculate DO for each treatment
+I'm leaving in the blips in MOATS 1 and 12 because I don't know if they are real or not
+```{r}
+mean(dtreat[grep("HH", dtreat$Treatment_abbv),"DO"])
+sd(dtreat[grep("HH", dtreat$Treatment_abbv),"DO"])
+
+mean(dtreat[grep("HL", dtreat$Treatment_abbv),"DO"])
+sd(dtreat[grep("HL", dtreat$Treatment_abbv),"DO"])
+
+mean(dtreat[grep("LH", dtreat$Treatment_abbv),"DO"])
+sd(dtreat[grep("LH", dtreat$Treatment_abbv),"DO"])
+
+mean(dtreat[grep("LL", dtreat$Treatment_abbv),"DO"])
+sd(dtreat[grep("LL", dtreat$Treatment_abbv),"DO"])
+```
+
+plot DO per treatment as boxplots
+```{r boxplots of DO per treatment}
+ggplot(dtreat) + geom_boxplot(aes(Target_Treatment,DO, color = Target_Treatment)) 
+```
+
+Calculate DO for each treatment
+seems like there is probe drift on day 22 in MOATS 8 and day 29 in MOATS 10, and possibly day 22 MOATS 4. but it only appears to be a few data points, so I'm not removing them for now. 
+```{r}
+mean(dtreat[grep("HH", dtreat$Treatment_abbv),"pH"])
+sd(dtreat[grep("HH", dtreat$Treatment_abbv),"pH"])
+
+mean(dtreat[grep("HL", dtreat$Treatment_abbv),"pH"])
+sd(dtreat[grep("HL", dtreat$Treatment_abbv),"pH"])
+
+mean(dtreat[grep("LH", dtreat$Treatment_abbv),"pH"])
+sd(dtreat[grep("LH", dtreat$Treatment_abbv),"pH"])
+
+mean(dtreat[grep("LL", dtreat$Treatment_abbv),"pH"])
+sd(dtreat[grep("LL", dtreat$Treatment_abbv),"pH"])
+```
+
+plot pH per treatment as boxplots
+```{r boxplots of pH per treatment}
+ggplot(dtreat) + geom_boxplot(aes(Target_Treatment,pH, color= Target_Treatment)) 
+```
+
+
+make supplementary table
+```{r}
+#add column for jar so that Spec pH will stay in a separate row from MOATS data
+dtreat$Jar <- "NA"
+#make a column for time only
+dtreat$time <- as.character(dtreat$datetime)
+dtreat$time <- substr(dtreat$time,12,19)
+#make a column for date only
+dtreat$Date <- as.Date(dtreat$datetime)
+
+#merge MOATS data with Spec data
+all_chem <- merge(dtreat,Spec_pH[,-grep("Treatment|Salinity|Data_Type|pH_at_25C", colnames(Spec_pH))], by = c("Date","MOATS", "Jar"), all = TRUE)
+#remove uninformative columns
+all_chem<- all_chem[,-c(4,7,9,11)]
+
+#reorder columns
+all_chem <- all_chem[,c(7,2,3,1,8,4,5,6,9,10)]
+#rename columns
+colnames(all_chem)[5:10] <- c("Time", "pH_logger", "Temp_logger", "DO_logger","calculated_DIC", "calculated_Spec_pH_at_12C")
+
+#write out chemistry to file
+write.csv(all_chem, "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Supplementary_Table_1.csv")
+```
