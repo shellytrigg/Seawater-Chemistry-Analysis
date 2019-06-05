@@ -19,7 +19,9 @@ read in and format spec data
 #define salinity data path
 spec_path <- "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/specs_w_correction/"
 #salinity is recorded as 29.62 for all dates
-#PMEL measured salinity 29.61, so I'll just go with the 29.62 (I don't think 0.01 is going to make a difference)
+#PMEL measured salinity 29.61
+##I manually changed the data sheets to reflect the salinity average: 28.94
+#Salinity was measured on Nov 22 @ 28.27psu and on Nov 30 @ 29.61psu
 
 #List all spec files in directory
 file.names <- dir(spec_path, pattern = ".csv", full.names = TRUE)
@@ -126,10 +128,15 @@ for(i in 1:length(folder.list)){
 restrict MOATS data to dates of the experiment
 ```{r}
 start_date <- as.POSIXct("2016/11/21_17:00:00", "%Y/%m/%d_%H:%M:%S", tz = "GMT")
-end_date <- as.POSIXct("2016/11/30", "%Y/%m/%d", tz = "GMT")
+end_date <- as.POSIXct("2016/11/30_14:00:00", "%Y/%m/%d_%H:%M:%S", tz = "GMT")
 
 d <- d[which(d$datetime >= start_date & d$datetime <= end_date),]
 
+```
+
+remove faulty MOATS data (M2 and M9)
+```{r}
+d <- d[which(d$MOATS != 2 & d$MOATS !=9),]
 ```
 
 plot MOATS pH data
@@ -145,7 +152,7 @@ plot MOATS temperature data
 #plot temp data for all MOATS
 ggplot(d,aes(datetime, OL)) + geom_point() + facet_wrap(~MOATS)
 ```
-MOATS 12 temp probe wonky, don't include that data
+MOATS 12 temp probe wonky, don't include that data when calculating averages
 
 
 plot MOATS temperature data without MOATS 12 which seemed to have a wonky probe
@@ -174,13 +181,14 @@ Convert spec pH at 25C to pH at 12
 ```{r}
 for (i in 1:nrow(Spec_pH)){
   print(i)
-  Sal <- 29.62
+  Sal <- 28.94
   #calculate TA ('alk') using the slope and intercept determined by 'Alkalinity v Salinity_KD_2018.R' script. This script compared Fassbender et al 2016 data to data from Muk (Chase's and our data from the past two years). This way, we were able to figure out what our offset is here at Muk.
   TAcalc <- ((50.946 * Sal)+522.506)/1000000
   pHspec <- Spec_pH$pH_at_25C[i]
   Temp <- meanT
   Spec_pH$carbSpecDIC[i] <- carb(flag = 8, pHspec, TAcalc, Sal,T=25)$DIC
   Spec_pH$carbSpecpH[i] <- carb(flag = 15, TAcalc,as.numeric(Spec_pH$carbSpecDIC[i]), Sal,Temp)$pH
+  Spec_pH$carbSpecArag[i] <- carb(flag = 15, TAcalc,as.numeric(Spec_pH$carbSpecDIC[i]), Sal,Temp)$OmegaAragonite
 }
 
 class(Spec_pH$carbSpecpH) <- "numeric"
@@ -259,6 +267,32 @@ plot pH per treatment as boxplots
 ggplot(dtreat) + geom_boxplot(aes(Target_Treatment,pH, color= Target_Treatment)) 
 ```
 
+read in presens data, merge with treatment info, remove faulty moats 2 and 9, calculate mean DO and SD for each treatment
+```{r}
+presens <- data.frame(read_xlsx("~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Presens_Nov2016.xlsx"))
+colnames(presens)[1] <- "MOATS"
+
+presens <- merge(presens, treat, by = "MOATS")
+
+#remove moats 2 and 9
+
+presens <- presens[which(presens$MOATS != 2 & presens$MOATS != 9),]
+
+
+###calculate average DO per treatment
+mean(presens[which(presens$Treatment_abbv == "HH"),"PreSens.DO"])
+sd(presens[which(presens$Treatment_abbv == "HH"),"PreSens.DO"])
+
+mean(presens[which(presens$Treatment_abbv == "HL"),"PreSens.DO"])
+sd(presens[which(presens$Treatment_abbv == "HL"),"PreSens.DO"])
+
+mean(presens[which(presens$Treatment_abbv == "LH"),"PreSens.DO"])
+sd(presens[which(presens$Treatment_abbv == "LH"),"PreSens.DO"])
+
+mean(presens[which(presens$Treatment_abbv == "LL"),"PreSens.DO"])
+sd(presens[which(presens$Treatment_abbv == "LL"),"PreSens.DO"])
+
+```
 
 make supplementary table
 ```{r}
@@ -270,16 +304,54 @@ dtreat$time <- substr(dtreat$time,12,19)
 #make a column for date only
 dtreat$Date <- as.Date(dtreat$datetime)
 
+#add treatment details to spec data
+Spec_pH <- merge(Spec_pH, treat, by = "MOATS")
+
 #merge MOATS data with Spec data
-all_chem <- merge(dtreat,Spec_pH[,-grep("Treatment|Salinity|Data_Type|pH_at_25C", colnames(Spec_pH))], by = c("Date","MOATS", "Jar"), all = TRUE)
-#remove uninformative columns
-all_chem<- all_chem[,-c(4,7,9,11)]
+all_chem <- merge(dtreat,Spec_pH[,-grep("^Treatment$|Salinity|Data_Type|pH_at_25C", colnames(Spec_pH))], by = c("Date","MOATS", "Jar", "Target_Treatment", "Treatment_abbv"), all = TRUE)
+```
+
+Calculate average and sd Spec pH and Arag. sat.
+```{r}
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecpH"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecpH"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecpH"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecpH"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecpH"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecpH"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecpH"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecpH"], na.rm = TRUE)
+
+###arag. sat
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecArag"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecArag"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecArag"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecArag"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecArag"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecArag"], na.rm = TRUE)
+
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecArag"], na.rm = TRUE)
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecArag"], na.rm = TRUE)
+```
+
+
+remove uninformative columns from all_chem, merge with presens data, rename columns, and save output
+```{r}
+all_chem<- all_chem[,-grep("Secs|^O$|datetime", colnames(all_chem))]
 
 #reorder columns
-all_chem <- all_chem[,c(7,2,3,1,8,4,5,6,9,10)]
+all_chem <- merge(all_chem, presens[,grep("MOATS|PreSens.DO|Date", colnames(presens))], by = c("Date", "MOATS"), all = TRUE)
+
+all_chem <- all_chem[,c(4,2,3,1,9,6,7,8,10,11,12,13)]
+
 #rename columns
-colnames(all_chem)[5:10] <- c("Time", "pH_logger", "Temp_logger", "DO_logger","calculated_DIC", "calculated_Spec_pH_at_12C")
+colnames(all_chem)[5:12] <- c("Time", "pH_logger", "Temp_logger", "DO_logger","calculated_DIC", "calculated_Spec_pH_at_12C", "calculated_Aragonite_Saturation", "DO_presens")
 
 #write out chemistry to file
-write.csv(all_chem, "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Supplementary_Table_1.csv")
+write.csv(all_chem, "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Supplementary_Table_1.csv", row.names = FALSE, quote = FALSE)
 ```

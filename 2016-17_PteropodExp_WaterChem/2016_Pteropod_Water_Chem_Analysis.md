@@ -35,7 +35,9 @@ read in and format spec data
 #define salinity data path
 spec_path <- "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/specs_w_correction/"
 #salinity is recorded as 29.62 for all dates
-#PMEL measured salinity 29.61, so I'll just go with the 29.62 (I don't think 0.01 is going to make a difference)
+#PMEL measured salinity 29.61
+##I manually changed the data sheets to reflect the salinity average: 28.94
+#Salinity was measured on Nov 22 @ 28.27psu and on Nov 30 @ 29.61psu
 
 #List all spec files in directory
 file.names <- dir(spec_path, pattern = ".csv", full.names = TRUE)
@@ -76,7 +78,7 @@ str(Spec_pH)
     ##  $ MOATS   : num  1 1 1 1 1 1 1 1 2 2 ...
     ##  $ Jar     : chr  "C7" "" "" "" ...
     ##  $ Date    : chr  "22-Nov-16" "24-Nov-16" "24-Nov-16" "26-Nov-16" ...
-    ##  $ Salinity: num  29.6 29.6 29.6 29.6 29.6 ...
+    ##  $ Salinity: num  28.9 28.9 28.9 28.9 28.9 ...
     ##  $ pH      : num  7.4 7.46 7.46 7.37 7.39 ...
 
 ``` r
@@ -198,6 +200,44 @@ for(i in 1:length(folder.list)){
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m13/m_16-11-28_1053_09.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m13/m_16-11-29_1053_10.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m13/m_16-11-30_1053_11.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-25_2149_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-26_2149_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-27_2149_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-28_2149_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-29_2149_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-30_2149_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-31_1314_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-10-31_1556_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-02_1746_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-03_1746_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-04_1746_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-05_1746_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-06_1646_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-07_1646_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-08_1347_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-08_1730_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-09_1730_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-10_1730_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-11_1730_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-12_1730_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-13_1730_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-14_1730_07.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-15_1730_08.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-16_1730_09.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-17_1730_10.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-18_1428_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-18_1513_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-19_1513_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-20_1513_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-21_1513_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-22_1513_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-23_1513_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-24_1513_07.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-25_1513_08.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-26_1513_09.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-27_1513_10.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-28_1513_11.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m2/m_16-11-29_1513_12.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m3/m_16-11-20_1525_03.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m3/m_16-11-21_1525_04.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m3/m_16-11-22_1525_05.lvm"
@@ -256,14 +296,52 @@ for(i in 1:length(folder.list)){
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m8/m_16-11-27_2249_07.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m8/m_16-11-28_2249_08.lvm"
     ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m8/m_16-11-29_2249_09.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-02_1746_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-03_1746_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-04_1746_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-05_1746_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-06_1646_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-07_0848_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-07_1606_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-08_1359_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-09_1247_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-10_1247_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-11_1247_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-12_1247_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-13_1247_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-14_1247_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-15_1247_07.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-16_1247_08.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-17_1247_09.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-18_1230_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-18_1520_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-19_1520_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-20_1520_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-21_1520_04.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-22_1520_05.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-23_1520_06.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-24_1520_07.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-25_1520_08.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-26_1059_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-27_0919_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-27_1203_01.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-28_1203_02.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-29_1203_03.lvm"
+    ## [1] "/Users/Shelly/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/MOATS_data/m9/m_16-11-30_1203_04.lvm"
 
 restrict MOATS data to dates of the experiment
 
 ``` r
 start_date <- as.POSIXct("2016/11/21_17:00:00", "%Y/%m/%d_%H:%M:%S", tz = "GMT")
-end_date <- as.POSIXct("2016/11/30", "%Y/%m/%d", tz = "GMT")
+end_date <- as.POSIXct("2016/11/30_14:00:00", "%Y/%m/%d_%H:%M:%S", tz = "GMT")
 
 d <- d[which(d$datetime >= start_date & d$datetime <= end_date),]
+```
+
+remove faulty MOATS data (M2 and M9)
+
+``` r
+d <- d[which(d$MOATS != 2 & d$MOATS !=9),]
 ```
 
 plot MOATS pH data
@@ -282,7 +360,7 @@ plot MOATS temperature data
 ggplot(d,aes(datetime, OL)) + geom_point() + facet_wrap(~MOATS)
 ```
 
-![](2016_Pteropod_Water_Chem_Analysis_files/figure-markdown_github/MOATS%20temperature%20data-1.png) MOATS 12 temp probe wonky, don't include that data
+![](2016_Pteropod_Water_Chem_Analysis_files/figure-markdown_github/MOATS%20temperature%20data-1.png) MOATS 12 temp probe wonky, don't include that data when calculating averages
 
 plot MOATS temperature data without MOATS 12 which seemed to have a wonky probe
 
@@ -307,14 +385,14 @@ calculate mean temp
 mean(d[which(d$MOATS != 12),"OL"])
 ```
 
-    ## [1] 10.29312
+    ## [1] 10.28974
 
 ``` r
 #[1] 10.29312
 sd(d[which(d$MOATS != 12),"OL"])
 ```
 
-    ## [1] 0.165076
+    ## [1] 0.1612368
 
 ``` r
 #[1] 0.165076
@@ -326,13 +404,14 @@ Convert spec pH at 25C to pH at 12
 ``` r
 for (i in 1:nrow(Spec_pH)){
   print(i)
-  Sal <- 29.62
+  Sal <- 28.94
   #calculate TA ('alk') using the slope and intercept determined by 'Alkalinity v Salinity_KD_2018.R' script. This script compared Fassbender et al 2016 data to data from Muk (Chase's and our data from the past two years). This way, we were able to figure out what our offset is here at Muk.
   TAcalc <- ((50.946 * Sal)+522.506)/1000000
   pHspec <- Spec_pH$pH_at_25C[i]
   Temp <- meanT
   Spec_pH$carbSpecDIC[i] <- carb(flag = 8, pHspec, TAcalc, Sal,T=25)$DIC
   Spec_pH$carbSpecpH[i] <- carb(flag = 15, TAcalc,as.numeric(Spec_pH$carbSpecDIC[i]), Sal,Temp)$pH
+  Spec_pH$carbSpecArag[i] <- carb(flag = 15, TAcalc,as.numeric(Spec_pH$carbSpecDIC[i]), Sal,Temp)$OmegaAragonite
 }
 ```
 
@@ -487,25 +566,25 @@ Calculate mean and sd for Spec pH
 mean(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "Low"),"carbSpecpH"])
 ```
 
-    ## [1] 7.539746
+    ## [1] 7.53927
 
 ``` r
 sd(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "Low"),"carbSpecpH"])
 ```
 
-    ## [1] 0.04190024
+    ## [1] 0.04189884
 
 ``` r
 mean(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "High"),"carbSpecpH"])
 ```
 
-    ## [1] 7.869512
+    ## [1] 7.869221
 
 ``` r
 sd(Spec_pH[which(Spec_pH$MOATS !=13 & Spec_pH$Date != as.POSIXct("2016-11-22") & Spec_pH$Treatment == "High"),"carbSpecpH"])
 ```
 
-    ## [1] 0.0340665
+    ## [1] 0.03409652
 
 read in target treatment info and merge with MOATS data so data can be averaged by treatment
 
@@ -521,49 +600,49 @@ Calculate DO for each treatment I'm leaving in the blips in MOATS 1 and 12 becau
 mean(dtreat[grep("HH", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 9.310603
+    ## [1] 9.309524
 
 ``` r
 sd(dtreat[grep("HH", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 0.1541213
+    ## [1] 0.1571288
 
 ``` r
 mean(dtreat[grep("HL", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 3.727451
+    ## [1] 3.727524
 
 ``` r
 sd(dtreat[grep("HL", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 0.4286237
+    ## [1] 0.4152265
 
 ``` r
 mean(dtreat[grep("LH", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 9.225278
+    ## [1] 9.230277
 
 ``` r
 sd(dtreat[grep("LH", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 0.1271855
+    ## [1] 0.1247294
 
 ``` r
 mean(dtreat[grep("LL", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 3.72926
+    ## [1] 3.729256
 
 ``` r
 sd(dtreat[grep("LL", dtreat$Treatment_abbv),"DO"])
 ```
 
-    ## [1] 0.4336376
+    ## [1] 0.4192891
 
 plot DO per treatment as boxplots
 
@@ -579,49 +658,49 @@ Calculate DO for each treatment seems like there is probe drift on day 22 in MOA
 mean(dtreat[grep("HH", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 7.914669
+    ## [1] 7.914159
 
 ``` r
 sd(dtreat[grep("HH", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 0.02329347
+    ## [1] 0.02343564
 
 ``` r
 mean(dtreat[grep("HL", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 7.942784
+    ## [1] 7.943158
 
 ``` r
 sd(dtreat[grep("HL", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 0.01654722
+    ## [1] 0.01627819
 
 ``` r
 mean(dtreat[grep("LH", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 7.551894
+    ## [1] 7.551765
 
 ``` r
 sd(dtreat[grep("LH", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 0.0274208
+    ## [1] 0.02731691
 
 ``` r
 mean(dtreat[grep("LL", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 7.562572
+    ## [1] 7.562677
 
 ``` r
 sd(dtreat[grep("LL", dtreat$Treatment_abbv),"pH"])
 ```
 
-    ## [1] 0.03252387
+    ## [1] 0.03230692
 
 plot pH per treatment as boxplots
 
@@ -630,6 +709,67 @@ ggplot(dtreat) + geom_boxplot(aes(Target_Treatment,pH, color= Target_Treatment))
 ```
 
 ![](2016_Pteropod_Water_Chem_Analysis_files/figure-markdown_github/boxplots%20of%20pH%20per%20treatment-1.png)
+
+read in presens data, merge with treatment info, remove faulty moats 2 and 9, calculate mean DO and SD for each treatment
+
+``` r
+presens <- data.frame(read_xlsx("~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Presens_Nov2016.xlsx"))
+colnames(presens)[1] <- "MOATS"
+
+presens <- merge(presens, treat, by = "MOATS")
+
+#remove moats 2 and 9
+
+presens <- presens[which(presens$MOATS != 2 & presens$MOATS != 9),]
+
+
+###calculate average DO per treatment
+mean(presens[which(presens$Treatment_abbv == "HH"),"PreSens.DO"])
+```
+
+    ## [1] 9.416667
+
+``` r
+sd(presens[which(presens$Treatment_abbv == "HH"),"PreSens.DO"])
+```
+
+    ## [1] 0.2157159
+
+``` r
+mean(presens[which(presens$Treatment_abbv == "HL"),"PreSens.DO"])
+```
+
+    ## [1] 3.875
+
+``` r
+sd(presens[which(presens$Treatment_abbv == "HL"),"PreSens.DO"])
+```
+
+    ## [1] 0.6434672
+
+``` r
+mean(presens[which(presens$Treatment_abbv == "LH"),"PreSens.DO"])
+```
+
+    ## [1] 9.846667
+
+``` r
+sd(presens[which(presens$Treatment_abbv == "LH"),"PreSens.DO"])
+```
+
+    ## [1] 0.07234178
+
+``` r
+mean(presens[which(presens$Treatment_abbv == "LL"),"PreSens.DO"])
+```
+
+    ## [1] 3.636667
+
+``` r
+sd(presens[which(presens$Treatment_abbv == "LL"),"PreSens.DO"])
+```
+
+    ## [1] 0.1171893
 
 make supplementary table
 
@@ -642,16 +782,125 @@ dtreat$time <- substr(dtreat$time,12,19)
 #make a column for date only
 dtreat$Date <- as.Date(dtreat$datetime)
 
+#add treatment details to spec data
+Spec_pH <- merge(Spec_pH, treat, by = "MOATS")
+
 #merge MOATS data with Spec data
-all_chem <- merge(dtreat,Spec_pH[,-grep("Treatment|Salinity|Data_Type|pH_at_25C", colnames(Spec_pH))], by = c("Date","MOATS", "Jar"), all = TRUE)
-#remove uninformative columns
-all_chem<- all_chem[,-c(4,7,9,11)]
+all_chem <- merge(dtreat,Spec_pH[,-grep("^Treatment$|Salinity|Data_Type|pH_at_25C", colnames(Spec_pH))], by = c("Date","MOATS", "Jar", "Target_Treatment", "Treatment_abbv"), all = TRUE)
+```
+
+Calculate average and sd Spec pH and Arag. sat.
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 7.867579
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 0.04821284
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 7.86963
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 0.02830754
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 7.52778
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 0.03492318
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 7.551259
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecpH"], na.rm = TRUE)
+```
+
+    ## [1] 0.04583957
+
+``` r
+###arag. sat
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 1.109793
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HH"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.1108779
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 1.111505
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "HL"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.06736881
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.5325763
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LH"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.03920783
+
+``` r
+mean(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.5619627
+
+``` r
+sd(all_chem[which(all_chem$MOATS !=13 & all_chem$Date != as.Date("2016-11-22") & all_chem$Treatment_abbv == "LL"),"carbSpecArag"], na.rm = TRUE)
+```
+
+    ## [1] 0.05786384
+
+remove uninformative columns from all\_chem, merge with presens data, rename columns, and save output
+
+``` r
+all_chem<- all_chem[,-grep("Secs|^O$|datetime", colnames(all_chem))]
 
 #reorder columns
-all_chem <- all_chem[,c(7,2,3,1,8,4,5,6,9,10)]
+all_chem <- merge(all_chem, presens[,grep("MOATS|PreSens.DO|Date", colnames(presens))], by = c("Date", "MOATS"), all = TRUE)
+
+all_chem <- all_chem[,c(4,2,3,1,9,6,7,8,10,11,12,13)]
+
 #rename columns
-colnames(all_chem)[5:10] <- c("Time", "pH_logger", "Temp_logger", "DO_logger","calculated_DIC", "calculated_Spec_pH_at_12C")
+colnames(all_chem)[5:12] <- c("Time", "pH_logger", "Temp_logger", "DO_logger","calculated_DIC", "calculated_Spec_pH_at_12C", "calculated_Aragonite_Saturation", "DO_presens")
 
 #write out chemistry to file
-write.csv(all_chem, "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Supplementary_Table_1.csv")
+write.csv(all_chem, "~/Documents/GitHub/Seawater-Chemistry-Analysis/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Supplementary_Table_1.csv", row.names = FALSE, quote = FALSE)
 ```
